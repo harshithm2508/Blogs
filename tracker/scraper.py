@@ -234,7 +234,7 @@ def parse(html: str, url: str) -> Post:
 
     # The extractor sometimes drops section headings (e.g. when it falls back to its
     # "wild text" rescue pass, which only collects paragraphs/lists/code/tables).
-    content = cleanup.restore_headings(content, cleaned)
+    content = cleanup.restore_headings(content, html)
     content = cleanup.trim_tail(content)
     content = _clean_markdown(content)
     words = len(re.findall(r"\w+", content))

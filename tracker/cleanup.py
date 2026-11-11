@@ -70,12 +70,16 @@ def restore_headings(markdown: str, html: str) -> str:
             continue
         # First substantial block after the heading (stop if another heading comes first).
         nxt = None
-        for el in h.find_all_next(HEADINGS + BLOCKS):
+        for el in h.find_all_next(HEADINGS + BLOCKS + ("a",)):
             if el.name in HEADINGS:
                 break
             if h in el.parents:
                 continue
             text = _norm(el.get_text(" ", strip=True))
+            if el.name == "a":
+                if len(text) >= 15:  # heading labels a box of links ("Related", "More to explore"), not prose
+                    break
+                continue
             if len(text) >= 15:
                 nxt = text[:60]
                 break

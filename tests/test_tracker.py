@@ -130,3 +130,11 @@ def test_restore_headings_ignores_unrelated_headings():
     html = "<h2>Sidebar</h2><p>Not part of the article at all, just a sidebar blurb.</p><h2>Real</h2><p>This paragraph is in the article body.</p>"
     md = "This paragraph is in the article body."
     assert cleanup.restore_headings(md, html) == "## Real\n\nThis paragraph is in the article body."
+
+
+def test_restore_headings_skips_link_boxes():
+    from tracker import cleanup
+    html = ("<h2>Here's more to explore</h2><div><a href='/a'>Some related article title here</a></div>"
+            "<p>The real section text starts here.</p>")
+    md = "The real section text starts here."
+    assert cleanup.restore_headings(md, html) == md
