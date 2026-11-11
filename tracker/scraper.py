@@ -11,6 +11,8 @@ import requests
 import trafilatura
 from bs4 import BeautifulSoup
 
+from . import cleanup
+
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/130.0 Safari/537.36"
@@ -114,7 +116,15 @@ def _iso_date(value: str | None) -> str | None:
         except ValueError:
             continue
     m = re.match(r"(\d{4}-\d{2}-\d{2})", value)
-    return m.group(1) if m else None
+    if m:
+        return m.group(1)
+    m = re.search(r"\b(\d{1,2})/(\d{1,2})/(\d{4})\b", value)  # US style MM/DD/YYYY
+    if m:
+        try:
+            return datetime(int(m.group(3)), int(m.group(1)), int(m.group(2))).date().isoformat()
+        except ValueError:
+            return None
+    return None
 
 
 def _clean_markdown(md: str) -> str:
@@ -149,8 +159,9 @@ def parse(html: str, url: str) -> Post:
     ld = _json_ld(soup)
     meta = trafilatura.extract_metadata(html, default_url=url)
 
+    cleaned = cleanup.strip_clutter(html)
     content = trafilatura.extract(
-        html,
+        cleaned,
         url=url,
         output_format="markdown",
         include_images=True,
@@ -162,7 +173,7 @@ def parse(html: str, url: str) -> Post:
         deduplicate=True,
     ) or ""
     if len(content.split()) < 50:
-        fallback = _fallback_markdown(soup)
+        fallback = _fallback_markdown(BeautifulSoup(cleaned, "lxml"))
         if len(fallback.split()) > len(content.split()):
             content = fallback
 
@@ -182,11 +193,17 @@ def parse(html: str, url: str) -> Post:
     author = _ld_author(ld) or (meta.author if meta else None) or _meta(soup, "author", "article:author")
     if author and author.startswith("http"):
         author = None
-    published = _iso_date(
-        _meta(soup, "article:published_time", "og:published_time", "datePublished", "date")
-        or ld.get("datePublished")
-        or (meta.date if meta else None)
-    )
+    published = None
+    for candidate in (  # first one that parses wins
+        _meta(soup, "article:published_time", "og:published_time", "datePublished", "date"),
+        ld.get("datePublished"),
+        ld.get("dateCreated"),
+        meta.date if meta else None,
+        *(t.get("datetime") for t in soup.find_all("time", attrs={"datetime": True})[:1]),
+    ):
+        published = _iso_date(candidate) if isinstance(candidate, str) else None
+        if published:
+            break
     sitename = _meta(soup, "og:site_name", "application-name") or (meta.sitename if meta else None)
     description = _meta(soup, "og:description", "description", "twitter:description") or (
         meta.description if meta else None
@@ -215,6 +232,10 @@ def parse(html: str, url: str) -> Post:
             seen.add(t.lower())
             clean_tags.append(t)
 
+    # The extractor sometimes drops section headings (e.g. when it falls back to its
+    # "wild text" rescue pass, which only collects paragraphs/lists/code/tables).
+    content = cleanup.restore_headings(content, cleaned)
+    content = cleanup.trim_tail(content)
     content = _clean_markdown(content)
     words = len(re.findall(r"\w+", content))
 

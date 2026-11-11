@@ -96,3 +96,37 @@ def test_issue_form_parsing():
     f = cli.parse_issue_form(body)
     assert cli.URL_RE.findall(f["blog url(s)"]) == ["https://a.com/x", "https://b.com/y"]
     assert f["company"] == "" and f["rating"].startswith("4")
+
+
+SECTIONED = Path(__file__).parent / "fixtures" / "sectioned_div_post.html"
+
+
+def test_restores_headings_dropped_by_extractor():
+    """Layout that makes trafilatura fall back to its heading-less 'wild text' rescue (seen on databricks.com)."""
+    post = scraper.parse(SECTIONED.read_text(), "https://www.acme.com/blog/what-is-widget-ingestion")
+    headings = [l for l in post.content_markdown.splitlines() if l.startswith("#")]
+    assert headings[-3:] == ["### Ingestion methods", "### Benefits", "### Challenges"]
+    md = post.content_markdown
+    # each heading sits right before its own section text
+    assert md.index("### Benefits") < md.index("Scalability ipsum") < md.index("### Challenges") < md.index("Challenges ipsum")
+
+
+def test_strips_promos_and_subscribe_boxes():
+    md = scraper.parse(SECTIONED.read_text(), "https://www.acme.com/blog/x").content_markdown
+    assert "playbook" not in md and "REPORT" not in md
+    assert "Subscribe" not in md and "latest posts" not in md
+    assert "Quality ipsum" in md  # last real paragraph kept
+
+
+def test_date_falls_through_unparseable_meta():
+    # article:published_time is "Mon, 05/12/2025 - 23:24"; JSON-LD has the ISO date
+    assert scraper.parse(SECTIONED.read_text(), "https://www.acme.com/blog/x").published == "2025-05-12"
+    assert scraper._iso_date("Mon, 05/12/2025 - 23:24") == "2025-05-12"
+    assert scraper._iso_date("2025-05-12T23:24:18+0000") == "2025-05-12"
+
+
+def test_restore_headings_ignores_unrelated_headings():
+    from tracker import cleanup
+    html = "<h2>Sidebar</h2><p>Not part of the article at all, just a sidebar blurb.</p><h2>Real</h2><p>This paragraph is in the article body.</p>"
+    md = "This paragraph is in the article body."
+    assert cleanup.restore_headings(md, html) == "## Real\n\nThis paragraph is in the article body."
