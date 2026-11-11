@@ -182,6 +182,9 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("rebuild", help="regenerate README, indexes and web data")
 
+    p_in = sub.add_parser("inspect", help="print page-structure diagnostics for a URL")
+    p_in.add_argument("url")
+
     args = ap.parse_args(argv)
 
     if args.cmd == "add":
@@ -189,6 +192,11 @@ def main(argv: list[str] | None = None) -> int:
         html = Path(args.html_file).read_text(encoding="utf-8") if args.html_file else None
         return run_add(urls, company=args.company, source=args.source, tags=_tags(args.tags), notes=args.notes,
                        status=args.status, rating=args.rating, refresh=args.refresh, dry_run=args.dry_run, html=html)
+
+    if args.cmd == "inspect":
+        from .inspect_page import inspect
+        inspect(args.url)
+        return 0
 
     if args.cmd == "add-from-issue":
         f = parse_issue_form(os.environ.get("ISSUE_BODY", ""))
