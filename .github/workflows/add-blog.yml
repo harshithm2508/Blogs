@@ -1,0 +1,126 @@
+name: Add blog
+
+# Scrapes blog posts and commits them to the library.
+# Trigger it from: Actions tab → "Add blog" → Run workflow, by asking Claude, or by opening
+# an issue with the "Add a blog" form (title starts with "[blog]").
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Blog URL(s) — several can be separated by spaces or new lines"
+        required: true
+      company:
+        description: "Override company (optional, auto-detected otherwise)"
+        required: false
+      source:
+        description: "Override source (optional, auto-detected otherwise)"
+        required: false
+      tags:
+        description: "Tags, comma separated (optional)"
+        required: false
+      notes:
+        description: "Your notes / takeaways (optional)"
+        required: false
+      status:
+        description: "Status"
+        type: choice
+        options: [read, to-read]
+        default: read
+      rating:
+        description: "Rating 1–5 (optional)"
+        type: choice
+        options: ["", "1", "2", "3", "4", "5"]
+        default: ""
+      refresh:
+        description: "Re-scrape if already tracked"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Preview only — don't commit"
+        type: boolean
+        default: false
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: blog-library
+  cancel-in-progress: false
+
+jobs:
+  add:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (startsWith(github.event.issue.title, '[blog]') && github.event.issue.user.login == github.repository_owner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Scrape (manual / Claude)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          URLS: ${{ inputs.urls }}
+          COMPANY: ${{ inputs.company }}
+          SOURCE: ${{ inputs.source }}
+          TAGS: ${{ inputs.tags }}
+          NOTES: ${{ inputs.notes }}
+          STATUS: ${{ inputs.status }}
+          RATING: ${{ inputs.rating }}
+          REFRESH: ${{ inputs.refresh }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          TRACKER_SUMMARY_FILE: ${{ runner.temp }}/summary.md
+        run: |
+          args=(--status "$STATUS")
+          [ -n "$COMPANY" ] && args+=(--company "$COMPANY")
+          [ -n "$SOURCE" ]  && args+=(--source "$SOURCE")
+          [ -n "$TAGS" ]    && args+=(--tags "$TAGS")
+          [ -n "$NOTES" ]   && args+=(--notes "$NOTES")
+          [ -n "$RATING" ]  && args+=(--rating "$RATING")
+          [ "$REFRESH" = "true" ] && args+=(--refresh)
+          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          python -m tracker add "$URLS" "${args[@]}"
+
+      - name: Scrape (issue)
+        if: github.event_name == 'issues'
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          TRACKER_SUMMARY_FILE: ${{ runner.temp }}/summary.md
+        run: python -m tracker add-from-issue
+
+      - name: Commit
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "blog-tracker[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data library README.md
+          if git diff --cached --quiet; then echo "Nothing new to commit."; exit 0; fi
+          count=$(git diff --cached --name-only -- 'library/*.md' ':!library/*/README.md' | wc -l)
+          git commit -m "📚 Add/update ${count} blog post(s)" -m "$(cat "$RUNNER_TEMP/summary.md" 2>/dev/null)"
+          for i in 1 2 3 4; do
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep $((2 ** i))
+          done
+          exit 1
+
+      - name: Reply on issue
+        if: ${{ always() && github.event_name == 'issues' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          OUTCOME: ${{ job.status }}
+        run: |
+          f="$RUNNER_TEMP/summary.md"
+          [ -s "$f" ] || echo "Something went wrong — see the workflow run log." > "$f"
+          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$f"
+          if [ "$OUTCOME" = "success" ]; then gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY"; fi

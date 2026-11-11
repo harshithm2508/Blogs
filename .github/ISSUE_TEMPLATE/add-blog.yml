@@ -1,0 +1,44 @@
+name: Add a blog
+description: Scrape a blog post and save it to the library
+title: "[blog] "
+body:
+  - type: textarea
+    id: urls
+    attributes:
+      label: Blog URL(s)
+      description: One or more links, one per line.
+      placeholder: https://netflixtechblog.com/...
+    validations:
+      required: true
+  - type: input
+    id: company
+    attributes:
+      label: Company
+      description: Optional — leave empty to auto-detect.
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      description: Optional — e.g. Medium, Substack, Company Blog. Leave empty to auto-detect.
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Optional, comma separated.
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options: ["Read", "To read"]
+      default: 0
+  - type: dropdown
+    id: rating
+    attributes:
+      label: Rating
+      options: ["—", "1 ★", "2 ★★", "3 ★★★", "4 ★★★★", "5 ★★★★★"]
+      default: 0
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Optional takeaways — saved at the top of the article.

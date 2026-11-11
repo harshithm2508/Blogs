@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scaling Event Pipelines | by Jane Doe | Netflix TechBlog</title>
+<meta property="og:title" content="Scaling Event Pipelines to Trillions of Events">
+<meta property="og:site_name" content="Netflix TechBlog">
+<meta property="og:description" content="How we rebuilt our event pipeline.">
+<meta property="og:image" content="https://miro.medium.com/cover.png">
+<meta property="article:published_time" content="2025-03-14T10:00:00.000Z">
+<meta property="article:tag" content="Kafka">
+<meta property="article:tag" content="Data Engineering">
+<meta name="author" content="Jane Doe">
+<meta property="al:android:package" content="com.medium.reader">
+<link rel="canonical" href="https://netflixtechblog.com/scaling-event-pipelines-abc123">
+</head>
+<body>
+<nav>Home About Sign in</nav>
+<article>
+<h1>Scaling Event Pipelines to Trillions of Events</h1>
+<p>Every day our systems produce an enormous number of events. In this post we describe how the data
+platform team rebuilt the pipeline that moves those events from producers to the warehouse, the trade-offs
+we considered, and the lessons we learned while migrating hundreds of services without downtime.</p>
+<h2>Background</h2>
+<p>The original pipeline was built years ago around a single cluster. As traffic grew, partitions became
+hot, consumer lag increased and the on-call burden became unsustainable. We needed a design that could
+scale horizontally, isolate noisy tenants and give producers clear back-pressure signals.</p>
+<h2>The new architecture</h2>
+<p>We split the pipeline into regional ingestion tiers, a routing layer and per-domain sinks. Each tier can
+be scaled independently and failures are contained within a region.</p>
+<ul><li>Regional Kafka clusters with tiered storage</li><li>A stateless router written in Java</li><li>Flink jobs for enrichment</li></ul>
+<pre><code>router.route(event).to(sink)</code></pre>
+<p>Read more in the <a href="https://kafka.apache.org/">Kafka documentation</a>.</p>
+<h2>Results</h2>
+<p>Consumer lag dropped by ninety percent, costs fell by a third and the number of pages for the on-call
+engineer went from several a week to almost none. We hope these lessons are useful for your own systems.</p>
+</article>
+<footer>© Netflix</footer>
+</body>
+</html>
