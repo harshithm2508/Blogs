@@ -9,9 +9,36 @@ images, links + metadata), saved as Markdown, and organised **by company** and *
 ## The library
 
 <!-- LIBRARY:START -->
-**0** posts tracked · **0** read · **0** companies · **0** sources · ~**0h 0m** of reading
+**1** posts tracked · **1** read · **1** companies · **1** sources · ~**0h 6m** of reading
 
-_Nothing tracked yet. Add your first blog post (see **Adding a blog** below)._
+### 🕒 Recently added
+
+| | Title | Author | Publication | Published | Read | Rating |
+|---|---|---|---|---|---|---|
+| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+
+### 🏢 By company
+
+[Databricks (1)](#company-databricks)
+
+<a id="company-databricks"></a>
+#### Databricks (1) — [folder](library/databricks/README.md)
+
+| | Title | Author | Publication | Published | Read | Rating |
+|---|---|---|---|---|---|---|
+| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+
+### 📚 By source
+
+[Company Blog (1)](#source-company-blog)
+
+<a id="source-company-blog"></a>
+#### Company Blog (1)
+
+| | Title | Author | Publication | Published | Read | Rating |
+|---|---|---|---|---|---|---|
+| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+
 <!-- LIBRARY:END -->
 
 ## Adding a blog

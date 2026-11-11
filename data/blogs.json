@@ -1,5 +1,30 @@
 {
   "version": 1,
-  "blogs": [],
+  "blogs": [
+    {
+      "id": "ffbc890c7bf5",
+      "title": "What is Data Ingestion?",
+      "url": "https://www.databricks.com/blog/what-is-data-ingestion",
+      "canonical_url": "https://www.databricks.com/blog/what-is-data-ingestion",
+      "author": "Databricks Staff",
+      "published": null,
+      "company": "Databricks",
+      "source": "Company Blog",
+      "publication": "Databricks",
+      "platform": "Gatsby",
+      "tags": [],
+      "description": "Data ingestion is the step of bringing data from source systems into a storage and processing platform so it is available for analysis.",
+      "image": "https://www.databricks.com/sites/default/files/2026-01/4personas-analytics-ai-bi-og.png",
+      "language": "en-US",
+      "word_count": 1430,
+      "reading_minutes": 6,
+      "status": "read",
+      "rating": null,
+      "notes": null,
+      "added": "2026-11-11T18:49:10Z",
+      "read_on": "2026-11-11",
+      "path": "library/databricks/undated-what-is-data-ingestion.md"
+    }
+  ],
   "repo": "harshithm2508/Blogs"
 }
