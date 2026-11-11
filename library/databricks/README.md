@@ -4,6 +4,6 @@
 
 | | Title | Author | Publication | Published | Read | Rating |
 |---|---|---|---|---|---|---|
-| ✅ | [What is Data Ingestion?](undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+| ✅ | [What is Data Ingestion?](2025-05-12-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | 2025-05-12 | 6m |  |
 
 [← back to library](../../README.md)

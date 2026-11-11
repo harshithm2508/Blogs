@@ -15,7 +15,7 @@ images, links + metadata), saved as Markdown, and organised **by company** and *
 
 | | Title | Author | Publication | Published | Read | Rating |
 |---|---|---|---|---|---|---|
-| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+| ✅ | [What is Data Ingestion?](library/databricks/2025-05-12-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | 2025-05-12 | 6m |  |
 
 ### 🏢 By company
 
@@ -26,7 +26,7 @@ images, links + metadata), saved as Markdown, and organised **by company** and *
 
 | | Title | Author | Publication | Published | Read | Rating |
 |---|---|---|---|---|---|---|
-| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+| ✅ | [What is Data Ingestion?](library/databricks/2025-05-12-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | 2025-05-12 | 6m |  |
 
 ### 📚 By source
 
@@ -37,7 +37,7 @@ images, links + metadata), saved as Markdown, and organised **by company** and *
 
 | | Title | Author | Publication | Published | Read | Rating |
 |---|---|---|---|---|---|---|
-| ✅ | [What is Data Ingestion?](library/databricks/undated-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | — | 6m |  |
+| ✅ | [What is Data Ingestion?](library/databricks/2025-05-12-what-is-data-ingestion.md) · [↗](https://www.databricks.com/blog/what-is-data-ingestion) | Databricks Staff | Databricks | 2025-05-12 | 6m |  |
 
 <!-- LIBRARY:END -->
 
